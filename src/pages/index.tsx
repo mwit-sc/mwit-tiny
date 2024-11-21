@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    router.push('https://openhouse.mwit.ac.th/')
+    router.push('https://mwit.ac.th/')
   }, [])
   return (
     <main className="">
