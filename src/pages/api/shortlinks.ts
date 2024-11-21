@@ -12,7 +12,10 @@ const filePath = path.join(process.cwd(), 'short.json');
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { shortlink, redirectUrl } = req.body;
+    let { shortlink, redirectUrl } = req.body;
+    if (!shortlink) {
+      shortlink = Math.random().toString(36).substring(2, 8);
+    }
 
     let data: ShortLink[] = [];
 
