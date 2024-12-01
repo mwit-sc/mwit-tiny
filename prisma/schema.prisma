@@ -13,7 +13,7 @@ model link {
   id         BigInt   @id @default(autoincrement())
   short      String?  @unique
   url        String?  @unique
-  count      Int?
+  count      Int      @default(0)
   created_at DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("mwit_link-tiny")
