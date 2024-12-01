@@ -36,10 +36,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       short: shortlink as string,
     },
   });
+  const count = await prisma.link.update({
+    where: {
+      short: shortlink as string,
+    },
+    data: {
+      count: {
+        increment: 1,
+      },
+    },
+  });
 
   return {
     props: {
       redirectUrl: linkData ? linkData.url : null,
+      count: count ? count.count : 0,
     },
   };
 };
