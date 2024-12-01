@@ -9,7 +9,7 @@ interface Data {
   count: number;
 }
 
-function sha256(plain: string) {
+async function sha256(plain: string) {
   const encoder = new TextEncoder();
   const data = encoder.encode(plain);
   return crypto.subtle.digest('SHA-256', data).then(async (buffer) => {
@@ -104,7 +104,27 @@ const ShortLinkForm = () => {
           shortlinks.map((link) => (
             <div key={link.shortlink} className="flex items-center justify-between border-b border-gray-200 dark:border-gray-600 py-2.5">
               <div>
-                <p className="text-blue-700 dark:text-blue-500 font-bold">Link: {link.shortlink}</p>
+                <p className="text-blue-700 dark:text-blue-500 font-bold">
+                  Link: https://tiny.mwit.link/{link.shortlink} 
+                  <button
+                    onClick={(e) => {
+                      navigator.clipboard.writeText(`https://tiny.mwit.link/${link.shortlink}`);
+                      if (e.currentTarget) {
+                        e.currentTarget.textContent = 'Copied';
+                        setTimeout(() => {
+                          if (e.currentTarget) {
+                            e.currentTarget.textContent = 'Copy';
+                          }
+                        }, 2000);
+                      }
+                    }}
+                    className="text-xs ml-2 text-blue-700 dark:text-blue-500 hover:underline"
+                  >
+                    {/* <small>Copy</small> */}
+                    Copy
+                  </button>
+                </p>
+                
                 <p className="text-gray-500 dark:text-gray-400">Redirect to: {link.redirectUrl}</p>
               </div>
               <p className="text-gray-500 dark:text-gray-400">Usage: {link.count} clicks</p>
