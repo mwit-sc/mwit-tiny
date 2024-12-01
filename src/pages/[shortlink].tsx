@@ -1,8 +1,8 @@
 // pages/[shortlink].tsx
+import { PrismaClient } from '@prisma/client';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import fs from 'fs';
-import path from 'path';
+import { useEffect } from 'react';
 
 type Props = {
   redirectUrl: string | null;
@@ -11,9 +11,11 @@ type Props = {
 const ShortLinkPage = ({ redirectUrl }: Props) => {
   const router = useRouter();
 
-  if (typeof window !== 'undefined' && redirectUrl) {
-    window.location.href = redirectUrl;
-  }
+  useEffect(() => {
+    if (redirectUrl) {
+      router.replace(redirectUrl.startsWith('http') ? redirectUrl : `http://${redirectUrl}`);
+    }
+  }, [redirectUrl, router]);
 
   return (
     <div>
@@ -28,19 +30,16 @@ const ShortLinkPage = ({ redirectUrl }: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { shortlink } = context.params!;
-  const filePath = path.join(process.cwd(), 'short.json');
-  let data = [];
-
-  if (fs.existsSync(filePath)) {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    data = JSON.parse(fileContent);
-  }
-
-  const linkData = data.find((link: { shortlink: string }) => link.shortlink === shortlink);
+  const prisma = new PrismaClient();
+  const linkData = await prisma.link.findUnique({
+    where: {
+      short: shortlink as string,
+    },
+  });
 
   return {
     props: {
-      redirectUrl: linkData ? linkData.redirectUrl : null,
+      redirectUrl: linkData ? linkData.url : null,
     },
   };
 };

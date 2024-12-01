@@ -1,47 +1,38 @@
 // pages/api/shortlinks.ts
+import { PrismaClient } from '../../../node_modules/.prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
-import path from 'path';
+import { headers } from 'next/headers';
 
-type ShortLink = {
-  shortlink: string;
-  redirectUrl: string;
-};
-
-const filePath = path.join(process.cwd(), 'short.json');
-
-const handler = (req: NextApiRequest, res: NextApiResponse) => {
+export default async function (req: NextApiRequest, res: NextApiResponse) {
+  const accessToken = await req.headers?.authorization;
+  if (accessToken != process.env.ACCESS_TOKEN) {
+    res.status(401).json({ message: 'Unauthorized' });
+    console.log(accessToken);
+    return;
+  }
   if (req.method === 'POST') {
     let { shortlink, redirectUrl } = req.body;
-    if (!shortlink) {
+    if (shortlink === undefined) {
       shortlink = Math.random().toString(36).substring(2, 8);
     }
-
-    let data: ShortLink[] = [];
-
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      data = JSON.parse(fileContent);
+    const prisma = new PrismaClient();
+    try {
+      const result = await prisma.link.create({
+        data: {
+          short: shortlink,
+          url: redirectUrl,
+        },
+      });
+      return result;
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create short link' });
+      return;
+    } finally {
+      await prisma.$disconnect();
+      res.status(200).json({ message: 'Short link created successfully!' });
     }
-
-    data.push({ shortlink, redirectUrl });
-
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-
-    res.status(200).json({ message: 'Short link created successfully!' });
-  } 
-  // else if (req.method === 'GET') {
-  //   if (fs.existsSync(filePath)) {
-  //     const fileContent = fs.readFileSync(filePath, 'utf8');
-  //     const data = JSON.parse(fileContent);
-  //     res.status(200).json(data);
-  //   } else {
-  //     res.status(200).json([]);
-  //   }
-  // }
+  }
   else {
     res.status(405).json({ message: 'Method Not Allowed' });
   }
 };
-
-export default handler;

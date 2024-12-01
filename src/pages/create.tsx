@@ -1,5 +1,7 @@
 // components/ShortLinkForm.tsx
 import { useState, useEffect } from 'react';
+import useSWR from 'swr';
+import { PrismaClient } from '@prisma/client';
 
 interface Data {
   shortlink: string;
@@ -7,29 +9,37 @@ interface Data {
   count: number;
 }
 
+function sha256(plain: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return crypto.subtle.digest('SHA-256', data).then(async (buffer) => {
+    const hashArray = Array.from(new Uint8Array(buffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  });
+}
+
+
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch data');
+  }
+  return response.json();
+}
+
 const ShortLinkForm = () => {
   const [password, setPassword] = useState('');
   const [shortlink, setShortlink] = useState('');
   const [redirectUrl, setRedirectUrl] = useState('');
-  const [data, setData] = useState<Data[]>([]);
+  const { data: shortlinks, mutate } = useSWR<Data[]>('/api/getshortlink', fetcher);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/getshortlink');
-      const result = await response.json();
-      setData(result);
-    };
-
-    fetchData();
-  }, []);
+  if (!shortlinks) {
+    return <p>Loading...</p>;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password !== '24OPH') {
-      alert('Incorrect password');
-      return;
-    }
 
     const newLink = {
       shortlink,
@@ -39,15 +49,16 @@ const ShortLinkForm = () => {
     const response = await fetch('/api/shortlinks', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': await sha256(password)
       },
       body: JSON.stringify(newLink)
     });
 
     if (response.ok) {
       alert('Short link created successfully!');
-      const result = await response.json();
-      setData((prevData) => [...prevData, result]);
+      const result: Data = await response.json();
+      mutate([...shortlinks, result], false);
     } else {
       alert('Failed to create short link');
     }
@@ -89,14 +100,17 @@ const ShortLinkForm = () => {
 
       <div className="mt-10">
         <h2 className="text-lg font-bold">Existing Short Links</h2>
-        {/* <pre className="bg-gray-100 p-4 rounded">{JSON.stringify(data, null, 2)}</pre> */}
-        {data.map((json) => (
-        <div key={json.shortlink}>
-          <p>shortlink: {json.shortlink}</p>
-          <p>redirectUrl: {json.redirectUrl}</p>
-          <p>count: {json.count}</p>
-        </div>
-      ))}
+        {
+          shortlinks.map((link) => (
+            <div key={link.shortlink} className="flex items-center justify-between border-b border-gray-200 dark:border-gray-600 py-2.5">
+              <div>
+                <p className="text-blue-700 dark:text-blue-500 font-bold">Link: {link.shortlink}</p>
+                <p className="text-gray-500 dark:text-gray-400">Redirect to: {link.redirectUrl}</p>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">Usage: {link.count} clicks</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   );
