@@ -9,12 +9,80 @@ datasource db {
   schemas  = ["mwit_link-tiny"]
 }
 
-model link {
-  id         BigInt   @id @default(autoincrement())
-  short      String?  @unique
-  url        String?  @unique
-  count      Int      @default(0)
-  created_at DateTime @default(now()) @db.Timestamptz(6)
 
+enum UserRole {
+  DEFAULT
+  SPECIAL
+  @@schema("mwit_link-tiny")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@schema("mwit_link-tiny")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("mwit_link-tiny")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(DEFAULT)
+  accounts      Account[]
+  sessions      Session[]
+  urls          Url[]
+
+  @@schema("mwit_link-tiny")
+}
+
+model Url {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  url           String
+  shortId       String?  @unique
+  customShortId String?  @unique
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  clicks        Click[]
+
+  @@schema("mwit_link-tiny")
+}
+
+model Click {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  country   String?
+  city      String?
+  device    String?
+  browser   String?
+  
   @@schema("mwit_link-tiny")
 }

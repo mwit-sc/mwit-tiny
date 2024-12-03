@@ -1,5 +1,5 @@
 // pages/api/shortlinks.ts
-import { PrismaClient } from '../../../node_modules/.prisma/client';
+import { PrismaClient } from '.prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { headers } from 'next/headers';
 
