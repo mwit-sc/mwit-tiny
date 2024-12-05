@@ -87,7 +87,7 @@ export function UrlCard({ url }: UrlCardProps) {
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm" disabled>
+              <Button variant="destructive" size="sm">
                 Delete
               </Button>
             </AlertDialogTrigger>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { nanoid } from "nanoid"
 import { NextResponse } from "next/server"
 
+
 export async function POST(req: Request) {
   try {
     const session = await auth()
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Custom short link already exists" }, { status: 400 })
       }
     }
-
+    // const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 6);
     const shortId = customShortId || nanoid(6)
     const shortenedUrl = await prisma.url.create({
       data: {
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(shortenedUrl)
   } catch (error) {
+    console.error(error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }
@@ -77,7 +79,7 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ message: "URL deleted successfully" }, { status: 200 })
   } catch (error) {
-    console.error(error)
+    console.log(error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }

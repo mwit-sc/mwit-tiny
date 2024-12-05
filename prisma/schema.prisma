@@ -66,6 +66,7 @@ model Url {
   updatedAt     DateTime @updatedAt
   url           String
   shortId       String?  @unique
+  enable        Boolean  @default(true)
   customShortId String?  @unique
   userId        String
   user          User     @relation(fields: [userId], references: [id])
