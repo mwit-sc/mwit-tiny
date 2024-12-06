@@ -70,7 +70,7 @@ export function UrlCard({ url }: UrlCardProps) {
         <p className="font-medium break-all">{shortUrl}</p>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <p className="text-sm text-muted-foreground">Clicks: {url._count.clicks}</p>
+        <p className="text-sm text-muted-foreground">Usage: {url._count.clicks} times</p>
         <div className="space-x-2">
           <Button
             variant="outline"
