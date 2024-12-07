@@ -35,8 +35,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Run Prisma generation with Node.js
 RUN npx prisma generate
 
-COPY next.config.js tsconfig.json ./
-COPY tailwind.config.js ./
+COPY next.config.mjs tsconfig.json ./
+COPY tailwind.config.ts ./
 
 # Build the application using Node.js
 RUN npm run build
