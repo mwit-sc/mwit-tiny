@@ -7,8 +7,14 @@ const nextConfig = {
         hostname: 'mwitophcdn.woyiswoy.com',
         port: '',
         pathname: '/img/**',
-    }, ],
-},
+    }],
+  },
+  ... process.env.USEDOCKER === 'true' ? {
+    experimental: {
+      outputFileTracingRoot: '/app', // Important for Docker builds
+    },
+    output: 'standalone',
+  } : {},
 };
 
 export default nextConfig;
