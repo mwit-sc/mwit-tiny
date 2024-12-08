@@ -4,6 +4,7 @@ import { User } from "@prisma/client"
 import { signOut } from "next-auth/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +20,26 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
   return (
-    <nav className="border-b">
+    <nav className="border-b shadow-sm">
       <div className="container flex h-16 items-center px-4 mx-auto">
-        <a href="/" className="font-bold text-lg">Tiny MWIT</a>
+        <motion.a
+          className="text-lg font-bold text-center"
+          style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+          animate={{
+            backgroundImage: [
+              'linear-gradient(45deg, #4169E1, #FF69B4)',
+              'linear-gradient(45deg, #FF69B4, #4169E1)',
+              'linear-gradient(45deg, #4169E1, #FF69B4)',
+            ]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        >
+          Tiny MWIT
+        </motion.a>
         <div className="ml-auto flex items-center space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -10,9 +10,7 @@ const nextConfig = {
     }],
   },
   ... process.env.USEDOCKER === 'true' ? {
-    experimental: {
-      outputFileTracingRoot: '/app', // Important for Docker builds
-    },
+    outputFileTracingRoot: '/app', // Important for Docker builds
     output: 'standalone',
   } : {},
 };

@@ -75,3 +75,20 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(10px, 15px);
+  }
+}
+
+/* Ensure the gradient animation works on webkit browsers */
+@supports (-webkit-background-clip: text) {
+  .gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+}
+

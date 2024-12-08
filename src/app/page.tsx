@@ -30,7 +30,6 @@ export default async function Home() {
     <div className="min-h-screen flex flex-col">
       <Navbar user={user} />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">URL Shortener</h1>
         <UrlShortener />
         <h2 className="text-2xl font-semibold mt-12 mb-6">Your Short Links</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
