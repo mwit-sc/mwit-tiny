@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { UrlShortener } from "@/components/url-shortener"
 import { UrlCard } from "@/components/url-card"
+import { UserRole } from "@prisma/client"
 
 export default async function Home() {
   const session = await auth()
@@ -13,7 +14,7 @@ export default async function Home() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: session.user.role !== UserRole.SPECIAL ? session.user.id : undefined },
     include: {
       urls: {
         orderBy: { createdAt: 'desc' },
