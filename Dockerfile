@@ -1,6 +1,8 @@
 # Use the official Node.js image as the base image
 FROM node:18-alpine AS base
 
+RUN apk add --no-cache openssl curl bash
+
 ENV USEDOCKER=true
 
 WORKDIR /app
