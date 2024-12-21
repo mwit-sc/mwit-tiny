@@ -22,6 +22,9 @@ interface UrlCardProps {
   url: Url & {
     _count: {
       clicks: number
+    },
+    user: {
+      name: string | null
     }
   }
 }
@@ -71,6 +74,11 @@ export function UrlCard({ url }: UrlCardProps) {
       </CardContent>
       <CardFooter className="flex justify-between">
         <p className="text-sm text-muted-foreground">Usage: {url._count.clicks} times</p>
+        {
+          url.user.name && (
+            <p className="text-sm text-muted-foreground">Owner: {url.user.name}</p>
+          )
+        }
         <div className="space-x-2">
           <Button
             variant="outline"
