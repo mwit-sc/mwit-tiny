@@ -14,7 +14,7 @@ export default async function Home() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.role !== UserRole.SPECIAL ? session.user.id : undefined },
+    where: { id: session.user.id },
     include: {
       urls: {
         orderBy: { createdAt: 'desc' },
@@ -27,6 +27,15 @@ export default async function Home() {
     redirect("/api/auth/signin")
   }
 
+  const urls = session.user.role === UserRole.SPECIAL ? user.urls : await prisma.url.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { _count: { select: { clicks: true } } }
+  })
+
+  if (!urls) {
+    redirect("/api/auth/signin")
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar user={user} />
@@ -34,7 +43,7 @@ export default async function Home() {
         <UrlShortener />
         <h2 className="text-2xl font-semibold mt-12 mb-6">Your Short Links</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {user.urls.map((url) => (
+          {urls.map((url) => (
             <UrlCard key={url.id} url={url} />
           ))}
         </div>
