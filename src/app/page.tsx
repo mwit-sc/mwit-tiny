@@ -27,7 +27,7 @@ export default async function Home() {
     redirect("/api/auth/signin")
   }
 
-  const urls = session.user.role === UserRole.SPECIAL ? user.urls : await prisma.url.findMany({
+  const urls = session.user.role !== UserRole.SPECIAL ? user.urls : await prisma.url.findMany({
     orderBy: { createdAt: 'desc' },
     include: { _count: { select: { clicks: true } } }
   })
