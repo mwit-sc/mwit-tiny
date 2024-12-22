@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    if (user.role === "DEFAULT" && user.urls.length >= 5) {
+    if (user.role === "DEFAULT" && user.urls.length >= 25) {
       return NextResponse.json({ error: "You have reached the maximum number of shortened URLs" }, { status: 403 })
     }
 
