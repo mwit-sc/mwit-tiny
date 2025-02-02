@@ -26,11 +26,12 @@ export async function GET(
   }
 
   // Record the click
-  await prisma.click.create({
+  await prisma.url.update({
+    where: { id: url.id },
     data: {
-      urlId: url.id,
-      device: parser.getDevice().type || "unknown",
-      browser: parser.getBrowser().name || "unknown",
+      clicks: {
+        increment: 1,
+      }
     },
   })
 

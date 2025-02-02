@@ -20,9 +20,7 @@ import {
 
 interface UrlCardProps {
   url: Url & {
-    _count: {
-      clicks: number
-    },
+    clicks: bigint
     user: {
       name: string | null
     }
@@ -73,7 +71,7 @@ export function UrlCard({ url }: UrlCardProps) {
         <p className="font-medium break-all">{shortUrl}</p>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <p className="text-sm text-muted-foreground">Usage: {url._count.clicks} times</p>
+        <p className="text-sm text-muted-foreground">Usage: {url.clicks} times</p>
         {
           url.user.name && (
             <p className="text-sm text-muted-foreground">Owner: {url.user.name}</p>

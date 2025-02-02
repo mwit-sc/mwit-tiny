@@ -4,9 +4,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  schemas  = ["mwit_link-tiny"]
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["mwit_link-tiny"]
 }
 
 
@@ -70,20 +71,7 @@ model Url {
   customShortId String?  @unique
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clicks        Click[]
+  clicks        BigInt  @default(0)
 
-  @@schema("mwit_link-tiny")
-}
-
-model Click {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  urlId     String
-  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
-  country   String?
-  city      String?
-  device    String?
-  browser   String?
-  
   @@schema("mwit_link-tiny")
 }

@@ -18,7 +18,7 @@ export default async function Home() {
     include: {
       urls: {
         orderBy: { createdAt: 'desc' },
-        include: { _count: { select: { clicks: true } }, user: { select: { name: true } } }
+        include: { user: { select: { name: true } } }
       }
     }
   })
@@ -29,7 +29,7 @@ export default async function Home() {
 
   const urls = session.user.role !== UserRole.SPECIAL ? user.urls : await prisma.url.findMany({
     orderBy: { createdAt: 'desc' },
-    include: { _count: { select: { clicks: true } }, user: { select: { name: true } } }
+    include: { user: { select: { name: true } } }
   })
 
   if (!urls) {
